@@ -1,25 +1,29 @@
-import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-import Header from './components/Header/index';
+import React from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import styled from "styled-components";
+import { Header, Sidebar, Chat } from "./components";
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Switch>
-          <Route path="/" exact>
-            <Header />
-          </Route>
-        </Switch>
-    </Router>
+        <Header />
+        <AppBody>
+          <Sidebar />
+          <Switch>
+            <Route path="/" exact>
+              <Chat />
+            </Route>
+          </Switch>
+        </AppBody>
+      </Router>
     </div>
   );
 }
 
-
 export default App;
+
+const AppBody = styled.div`
+  display: flex;
+  height: 100vh;
+`;
