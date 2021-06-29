@@ -14,15 +14,17 @@ import AppsIcon from "@material-ui/icons/Apps";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 function Sidebar() {
   const [channels, loading, error] = useCollection(db.collection("rooms"));
+  const [user] = useAuthState(auth);
   return (
     <S.SidebarContainer>
       <S.SidebarHeader>
         <S.SidebarInfo>
-          <h2>PAPA FAM HQ</h2>
+          <h2>{}</h2>
           <h3>
             <FiberManualRecordIcon />
             Sonny Sangha

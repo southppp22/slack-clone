@@ -51,7 +51,6 @@ function Chat() {
 
           <S.ChatMessages>
             {roomMessages?.docs.map((doc) => {
-              console.log(doc);
               const { message, timestamp, user, userimage } = doc.data();
 
               return (
