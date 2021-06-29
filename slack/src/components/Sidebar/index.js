@@ -24,10 +24,10 @@ function Sidebar() {
     <S.SidebarContainer>
       <S.SidebarHeader>
         <S.SidebarInfo>
-          <h2>{}</h2>
+          <h2>slack clone</h2>
           <h3>
             <FiberManualRecordIcon />
-            Sonny Sangha
+            {user?.displayName}
           </h3>
         </S.SidebarInfo>
         <CreateIcon />
