@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as S from "./style";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { SidebarOption } from "components";
@@ -11,15 +11,25 @@ import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import AppsIcon from "@material-ui/icons/Apps";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import AddIcon from "@material-ui/icons/Add";
+import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import { db, auth } from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 function Sidebar() {
-  const [channels, loading, error] = useCollection(db.collection("rooms"));
+  const [isFold, setIsFold] = useState(false);
   const [user] = useAuthState(auth);
+
+  const foldChannel = () => {
+    setIsFold(!isFold);
+  };
+
+  const [channels] = useCollection(db.collection("rooms"));
+  const channlList = channels?.docs.map((doc) => (
+    <SidebarOption key={doc.id} id={doc.id} title={doc.data().name} />
+  ));
   return (
     <S.SidebarContainer>
       <S.SidebarHeader>
@@ -40,15 +50,28 @@ function Sidebar() {
       <SidebarOption Icon={PeopleAltIcon} title="People & user groups" />
       <SidebarOption Icon={AppsIcon} title="Apps" />
       <SidebarOption Icon={FileCopyIcon} title="File browser" />
-      <SidebarOption Icon={ExpandLessIcon} title="Show less" />
+      <SidebarOption Icon={ArrowDropUpIcon} title="Show less" />
       <hr />
-      <SidebarOption Icon={ExpandMoreIcon} title="Channels" />
+      {isFold ? (
+        <>
+          <SidebarOption
+            Icon={ArrowRightIcon}
+            title="Channels"
+            fold={foldChannel}
+          />
+        </>
+      ) : (
+        <>
+          <SidebarOption
+            Icon={ArrowDropDownIcon}
+            title="Channels"
+            fold={foldChannel}
+          />
+          {channlList}
+        </>
+      )}
       <hr />
       <SidebarOption Icon={AddIcon} addChannelOption title="Add Channels" />
-
-      {channels?.docs.map((doc) => (
-        <SidebarOption key={doc.id} id={doc.id} title={doc.data().name} />
-      ))}
     </S.SidebarContainer>
   );
 }

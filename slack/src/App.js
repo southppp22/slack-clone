@@ -6,6 +6,12 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 import Spinner from "react-spinkit";
 
+//ToDo
+//1. 친구추가
+//1.1 친구 접속 상태 확인
+//2. DM
+//3. 채널초대
+
 function App() {
   const [user, loading] = useAuthState(auth);
 
