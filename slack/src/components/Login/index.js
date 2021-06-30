@@ -1,12 +1,22 @@
 import React from "react";
 import * as S from "./style";
 import { Button } from "@material-ui/core";
-import { auth, provider } from "../../firebase";
+import { auth, provider, db } from "../../firebase";
 
 function Login() {
-  const signIn = (e) => {
+  const signIn = async (e) => {
     e.preventDefault();
-    auth.signInWithPopup(provider).catch((error) => alert(error.message));
+
+    const {
+      user: { uid, displayName, email },
+    } = await auth.signInWithPopup(provider);
+
+    const userRef = db.collection("users");
+    const doc = await userRef.doc(uid).get();
+
+    if (!doc.exists) {
+      userRef.doc(uid).set({ id: uid, name: displayName, email });
+    }
   };
   return (
     <S.LoginContainer>
