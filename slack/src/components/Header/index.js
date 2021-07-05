@@ -10,7 +10,7 @@ import { SearchOption } from "components";
 
 function Header() {
   const [user] = useAuthState(auth);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [keywords, setKeywords] = useState("");
   const [people, setPeople] = useState([]);
 
