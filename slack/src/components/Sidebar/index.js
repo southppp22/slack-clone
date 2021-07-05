@@ -28,7 +28,10 @@ function Sidebar() {
     setIsFold(copy);
   };
 
-  const [channels] = useCollection(db.collection("rooms"));
+  const [channels] = useCollection(
+    db.collection("rooms").where("users", "array-contains", user.uid)
+  );
+
   const channlList = channels?.docs.map((doc) => (
     <SidebarOption key={doc.id} id={doc.id} title={doc.data().name} />
   ));

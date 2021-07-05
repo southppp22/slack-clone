@@ -2,18 +2,20 @@ import React from "react";
 import * as S from "./style";
 
 //절대경로 적용안됨
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import { useDispatch } from "react-redux";
 import { enterRoom } from "features/appSlice";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 function SidebarOption({ Icon, title, addChannelOption, id, fold }) {
+  const [user] = useAuthState(auth);
   const dispatch = useDispatch();
 
   const addChannel = () => {
     const channelName = prompt("Please enter the channel name");
 
-    db.collection("rooms").add({ name: channelName });
     if (channelName) {
+      db.collection("rooms").add({ name: channelName, users: [user.uid] });
     }
   };
 
