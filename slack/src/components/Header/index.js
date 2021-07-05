@@ -13,8 +13,7 @@ function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [keywords, setKeywords] = useState("");
   const [people, setPeople] = useState([]);
-  console.log(user.email);
-  console.log(people);
+
   const f = async () => {
     if (keywords === "") {
       return;

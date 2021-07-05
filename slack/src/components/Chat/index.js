@@ -8,13 +8,17 @@ import { ChatInput } from "components";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { db } from "../../firebase";
 import { Message } from "components";
+import generateTitle from "common/utils/generateTitle";
+import { useFetchUser } from "hooks";
 
 function Chat() {
   const chatRef = useRef(null);
+  const user = useFetchUser();
   const roomId = useSelector(selectRoomId);
-  const [roomDetails] = useDocument(
+  const [roomSnapShot] = useDocument(
     roomId && db.collection("rooms").doc(roomId)
   );
+  const roomDetails = roomSnapShot?.data();
 
   const [roomMessages, loading] = useCollection(
     roomId &&
@@ -33,12 +37,17 @@ function Chat() {
 
   return (
     <S.ChatContainer>
-      {roomDetails && roomMessages && (
+      {roomSnapShot && roomMessages && (
         <>
           <S.Header>
             <S.HeaderLeft>
               <h4>
-                <strong>#{roomDetails?.data().name}</strong>
+                <strong>
+                  #
+                  {roomDetails.type === "DM"
+                    ? generateTitle(user.id, roomDetails.name)
+                    : roomDetails.name}
+                </strong>
               </h4>
               <StarBorderOutlinedIcon />
             </S.HeaderLeft>
@@ -68,7 +77,7 @@ function Chat() {
 
           <ChatInput
             chatRef={chatRef}
-            channelName={roomDetails?.data().name}
+            channelName={roomDetails.name}
             channelId={roomId}
           />
         </>

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import styled from "styled-components";
 import { Header, Sidebar, Chat, Login } from "components";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
 import Spinner from "react-spinkit";
 
 //ToDo

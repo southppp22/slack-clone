@@ -17,10 +17,13 @@ import AddIcon from "@material-ui/icons/Add";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import { db, auth } from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import generateTitle from "common/utils/generateTitle";
+import { useFetchUser } from "hooks";
 
 function Sidebar() {
   const [isFold, setIsFold] = useState([true, true]);
   const [user] = useAuthState(auth);
+  const { id } = useFetchUser();
 
   const foldChannel = (idx) => {
     const copy = [...isFold];
@@ -32,9 +35,36 @@ function Sidebar() {
     db.collection("rooms").where("users", "array-contains", user.uid)
   );
 
-  const channlList = channels?.docs.map((doc) => (
-    <SidebarOption key={doc.id} id={doc.id} title={doc.data().name} />
-  ));
+  const channlList = channels?.docs
+    .filter((doc) => {
+      const { type } = doc.data();
+      if (type === "channel") {
+        return true;
+      }
+      return false;
+    })
+    .map((doc) => (
+      <SidebarOption key={doc.id} id={doc.id} title={doc.data().name} />
+    ));
+
+  const [DMRoom] = useCollection(
+    db.collection("rooms").where("users", "array-contains", user.uid)
+  );
+
+  const DMRoomList = DMRoom?.docs
+    .filter((doc) => {
+      const { type } = doc.data();
+      if (type === "DM") {
+        return true;
+      }
+      return false;
+    })
+    .map((doc) => {
+      const title = doc.data().name;
+      const DMTitle = generateTitle(id, title);
+      return <SidebarOption key={doc.id} id={doc.id} title={DMTitle} />;
+    });
+
   return (
     <S.SidebarContainer>
       <S.SidebarHeader>
@@ -89,9 +119,10 @@ function Sidebar() {
         <>
           <SidebarOption
             Icon={ArrowDropDownIcon}
-            title="Direct messages"
+            title="Channels"
             fold={foldChannel.bind(null, 1)}
           />
+          {DMRoomList}
         </>
       )}
     </S.SidebarContainer>
