@@ -2,20 +2,26 @@ import React from "react";
 import * as S from "./style";
 import { Button } from "@material-ui/core";
 import { auth, provider, db } from "../../firebase";
+import generateId from "common/utils/generateId";
 
 function Login() {
   const signIn = async (e) => {
     e.preventDefault();
 
     const {
-      user: { uid, displayName, email },
+      user: { uid, displayName, email, photoURL },
     } = await auth.signInWithPopup(provider);
 
     const userRef = db.collection("users");
     const doc = await userRef.doc(uid).get();
 
     if (!doc.exists) {
-      userRef.doc(uid).set({ id: uid, name: displayName, email });
+      userRef.doc(uid).set({
+        id: await generateId(displayName),
+        name: displayName,
+        email,
+        photoURL,
+      });
     }
   };
   return (

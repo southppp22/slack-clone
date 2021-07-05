@@ -19,11 +19,13 @@ import { db, auth } from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 function Sidebar() {
-  const [isFold, setIsFold] = useState(false);
+  const [isFold, setIsFold] = useState([true, true]);
   const [user] = useAuthState(auth);
 
-  const foldChannel = () => {
-    setIsFold(!isFold);
+  const foldChannel = (idx) => {
+    const copy = [...isFold];
+    copy[idx] = !copy[idx];
+    setIsFold(copy);
   };
 
   const [channels] = useCollection(db.collection("rooms"));
@@ -52,12 +54,12 @@ function Sidebar() {
       <SidebarOption Icon={FileCopyIcon} title="File browser" />
       <SidebarOption Icon={ArrowDropUpIcon} title="Show less" />
       <hr />
-      {isFold ? (
+      {isFold[0] ? (
         <>
           <SidebarOption
             Icon={ArrowRightIcon}
             title="Channels"
-            fold={foldChannel}
+            fold={foldChannel.bind(null, 0)}
           />
         </>
       ) : (
@@ -65,13 +67,30 @@ function Sidebar() {
           <SidebarOption
             Icon={ArrowDropDownIcon}
             title="Channels"
-            fold={foldChannel}
+            fold={foldChannel.bind(null, 0)}
           />
           {channlList}
+          <SidebarOption Icon={AddIcon} addChannelOption title="Add Channels" />
         </>
       )}
       <hr />
-      <SidebarOption Icon={AddIcon} addChannelOption title="Add Channels" />
+      {isFold[1] ? (
+        <>
+          <SidebarOption
+            Icon={ArrowRightIcon}
+            title="Direct messages"
+            fold={foldChannel.bind(null, 1)}
+          />
+        </>
+      ) : (
+        <>
+          <SidebarOption
+            Icon={ArrowDropDownIcon}
+            title="Direct messages"
+            fold={foldChannel.bind(null, 1)}
+          />
+        </>
+      )}
     </S.SidebarContainer>
   );
 }
