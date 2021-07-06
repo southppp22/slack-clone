@@ -8,14 +8,19 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../firebase";
 import { SearchOption } from "components";
 
-function Header() {
+function Header({
+  searchBoxState,
+  setSearchBoxState,
+  keywords,
+  onChange,
+  reset,
+}) {
   const [user] = useAuthState(auth);
-  const [isOpen, setIsOpen] = useState(true);
-  const [keywords, setKeywords] = useState("");
   const [people, setPeople] = useState([]);
 
   const f = async () => {
     if (keywords === "") {
+      reset();
       return;
     }
 
@@ -52,15 +57,17 @@ function Header() {
 
       <S.HeaderSearch>
         <SearchIcon />
-        {!isOpen ? (
+        {searchBoxState ? (
           <S.HeaderSearchDrobBox>
             <S.HeaderSearchDrobBoxTop>
               <SearchIcon />
               <input
                 placeholder="What do you want to search for today?"
-                onChange={(e) => setKeywords(e.target.value)}
+                onChange={(e) => onChange(e)}
+                name="keywords"
+                value={keywords}
               />
-              <CloseIcon onClick={() => setIsOpen(true)} />
+              <CloseIcon onClick={() => setSearchBoxState(false)} />
             </S.HeaderSearchDrobBoxTop>
             <S.HeaderSearchDrobBoxBottom>
               {people.length > 0 ? (
@@ -82,7 +89,7 @@ function Header() {
         ) : (
           <input
             placeholder="Search anything"
-            onClick={() => setIsOpen(false)}
+            onClick={() => setSearchBoxState(true)}
           />
         )}
       </S.HeaderSearch>

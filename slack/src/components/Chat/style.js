@@ -35,6 +35,7 @@ export const HeaderRight = styled.div`
     display: flex;
     align-items: center;
     font-size: 14px;
+    cursor: pointer;
   }
 
   > p > .MuiSvgIcon-root {

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import styled from "styled-components";
 import { Header, Sidebar, Chat, Login } from "components";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "./firebase";
 import Spinner from "react-spinkit";
+import { useInputs } from "hooks";
 
 //ToDo
 //1. 친구추가
@@ -14,6 +15,10 @@ import Spinner from "react-spinkit";
 
 function App() {
   const [user, loading] = useAuthState(auth);
+  const [{ keywords }, onChange, reset] = useInputs({
+    keywords: "",
+  });
+  const [searchBoxState, setSearchBoxState] = useState(false);
 
   if (loading) {
     return (
@@ -36,12 +41,18 @@ function App() {
           <Login />
         ) : (
           <>
-            <Header />
+            <Header
+              searchBoxState={searchBoxState}
+              setSearchBoxState={setSearchBoxState}
+              keywords={keywords}
+              onChange={onChange}
+              reset={reset}
+            />
             <AppBody>
               <Sidebar />
               <Switch>
                 <Route path="/" exact>
-                  <Chat />
+                  <Chat setSearchBoxState={setSearchBoxState} />
                 </Route>
               </Switch>
             </AppBody>

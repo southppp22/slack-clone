@@ -3,9 +3,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import React from "react";
 import * as S from "./style";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { enterRoom } from "features/appSlice";
 import { useFetchUser } from "hooks";
+import { selectRoomId } from "features/appSlice";
+import firebase from "firebase";
 
 function SearchOption({ id, photoURL }) {
   const dispatch = useDispatch();
@@ -46,8 +48,29 @@ function SearchOption({ id, photoURL }) {
     }
   };
 
+  const roomId = useSelector(selectRoomId);
+  const [roomSnapShot] = useDocument(
+    roomId && db.collection("rooms").doc(roomId)
+  );
+  const roomDetails = roomSnapShot?.data();
+
+  const inviteFriend = () => {
+    const userId = user?.docs.map((doc) => doc.id)[0];
+    db.collection("rooms")
+      .doc(roomId)
+      ?.update({
+        users: firebase.firestore.FieldValue.arrayUnion(userId),
+      });
+  };
+
   return (
-    <S.searchOptionContainer onClick={generateDM}>
+    <S.searchOptionContainer
+      onClick={
+        roomDetails && roomDetails?.type === "channel"
+          ? inviteFriend
+          : generateDM
+      }
+    >
       <img src={photoURL}></img>
       <h4>{id}</h4>
     </S.searchOptionContainer>

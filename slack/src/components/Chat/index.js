@@ -4,14 +4,16 @@ import { useSelector } from "react-redux";
 import { selectRoomId } from "features/appSlice";
 import StarBorderOutlinedIcon from "@material-ui/icons/StarBorderOutlined";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import AddIcon from "@material-ui/icons/Add";
 import { ChatInput } from "components";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { db } from "../../firebase";
 import { Message } from "components";
 import generateTitle from "common/utils/generateTitle";
 import { useFetchUser } from "hooks";
+import firebase from "firebase";
 
-function Chat() {
+function Chat({ setSearchBoxState }) {
   const chatRef = useRef(null);
   const user = useFetchUser();
   const roomId = useSelector(selectRoomId);
@@ -28,6 +30,17 @@ function Chat() {
         .collection("messages")
         .orderBy("timestamp", "asc")
   );
+
+  //1. invite friend를 클릭하면 header searchbox를 오픈
+  //2. searchbox앞에는 "invite channelName"이라는 블럭이 들어감
+  //3. 원하는 사용자를 찾아 클릭하게 되면 채널에 초대
+  const inviteFriend = (user) => {
+    db.collection("rooms")
+      .doc(roomId)
+      ?.update({
+        users: firebase.firestore.FieldValue.arrayUnion(user),
+      });
+  };
 
   useEffect(() => {
     chatRef?.current?.scrollIntoView({
@@ -52,9 +65,15 @@ function Chat() {
               <StarBorderOutlinedIcon />
             </S.HeaderLeft>
             <S.HeaderRight>
-              <p>
-                <InfoOutlinedIcon /> Details
-              </p>
+              {roomDetails?.type === "DM" ? (
+                <p>
+                  <InfoOutlinedIcon /> Details
+                </p>
+              ) : (
+                <p onClick={() => setSearchBoxState(true)}>
+                  <AddIcon /> Invite friend
+                </p>
+              )}
             </S.HeaderRight>
           </S.Header>
 
